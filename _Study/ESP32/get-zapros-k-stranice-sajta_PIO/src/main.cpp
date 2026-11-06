@@ -14,6 +14,8 @@ void setup()
   Serial.begin(115200);
   // делаем небольшую задержку на открытие монитора порта
   delay(5000);
+  Serial.println("Через 5 секунд соединяемся с Wi-Fi..");
+  delay(5000);
   // подключаемся к Wi-Fi сети
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) 
@@ -32,8 +34,11 @@ void loop()
     // создаем объект для работы с HTTP
     HTTPClient http;
     // подключаемся к веб-странице
-    //http.begin("http://developer.alexanderklimov.ru/arduino/");
-    http.begin("https://doortry.ru/stihi/sorevnovanie-s-hakerami");
+    // http.begin("http://developer.alexanderklimov.ru/arduino/");
+    // http.begin("https://doortry.ru/stihi/sorevnovanie-s-hakerami");
+    // http.begin("https://kwinflat.ru/svanidze/");
+    http.begin("https://kwinflat.ru/Vid17b/");
+    
     // делаем GET запрос
     int httpCode = http.GET();
     // проверяем успешность запроса
@@ -41,8 +46,10 @@ void loop()
     {
       // выводим ответ сервера
       String payload = http.getString();
+      Serial.println("\n-------------------------------------------------------------------");
       Serial.println(httpCode);
       Serial.println(payload);
+      Serial.println("-------------------------------------------------------------------");
     }
     else 
     {
