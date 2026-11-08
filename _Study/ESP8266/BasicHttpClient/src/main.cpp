@@ -1,62 +1,80 @@
 #include <Arduino.h>
 
 /*
-#include <ESP8266HTTPClient.h>
+// v1 - работает ----------------------------------------------------------------------------------------
+
+// Подключаем библиотеку для работы с HTTP-протоколом
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
 
-//const char* ssid = "yourSSID";
-//const char* password = "yourPASS";
-const char *ssid = "TP-Link_B394";                        // Название точки доступа
-const char *password = "18009217";                        // Пароль точки доступа 
+// Вводим имя и пароль точки доступа
+//const char *ssid =     "linksystve";     // Put your SSID here
+//const char *password = "x93k6kq6wf";     // Put your PASSWORD here
 
-byte tries = 10;  // Попыткок подключения к точке доступа
+const char *ssid =     "TP-Link_B394";     // Put your SSID here
+const char *password = "18009217";     // Put your PASSWORD here
+
+//const char* ssid     = "OPPO A9 2020";
+//const char* password = "b277a4ee84e8";
 
 void setup() 
 {
   Serial.begin(115200);
+  // делаем небольшую задержку на открытие монитора порта
+  delay(5000);
+  Serial.println("Через 5 секунд соединяемся с Wi-Fi..");
+  delay(5000);
+  // подключаемся к Wi-Fi сети
   WiFi.begin(ssid, password);
-  while (--tries && WiFi.status() != WL_CONNECTED) 
+  while (WiFi.status() != WL_CONNECTED) 
   {
-    delay(500);
-    Serial.print(".");
+    delay(1000);
+    Serial.println("Соединяемся с Wi-Fi..");
   }
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.println("Non Connecting to WiFi..");
-  }
-  else
-  {
-    // Иначе удалось подключиться отправляем сообщение
-    // о подключении и выводим адрес IP
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
-  }
+  Serial.println("Соединение с Wi-Fi установлено");
 }
 
 void loop() 
 {
-
-  HTTPClient http;    //Объявить объект класса HttpClient
-
-  http.begin("http://kwinflat.ru/Vid17b");      //Укажите адрес запроса
-  http.addHeader("Content-Type", "text/plain");  //Укажите заголовок типа содержимого
-
-  int httpCode = http.POST("Message from ESP8266");   //Отправьте запрос
-  String payload = http.getString();                  //Получите полезную нагрузку ответа
-
-  Serial.println(httpCode);   //Распечатать код возврата HTTP
-  Serial.println(payload);    //Полезная нагрузка для ответа на запрос печати
-
-  http.end();  //Закрыть соединение
-
-
-  delay(10000);  //Ждем 30 сек.
-
+  // выполняем проверку подключения к беспроводной сети
+  if ((WiFi.status() == WL_CONNECTED)) 
+  {
+    // создаем объект для работы с HTTP
+    HTTPClient http;
+    WiFiClient client;
+// подключаемся к веб-странице
+    // http.begin("http://developer.alexanderklimov.ru/arduino/");
+    //http.begin("https://doortry.ru/stihi/sorevnovanie-s-hakerami");
+    // http.begin("https://kwinflat.ru/svanidze/");
+    http.begin(client,"http://kwinflat.ru/Vid17b/");
+    
+    // делаем GET запрос
+    int httpCode = http.GET();
+    // проверяем успешность запроса
+    if (httpCode > 0) 
+    {
+      // выводим ответ сервера
+      String payload = http.getString();
+      Serial.println("\n-------------------------------------------------------------------");
+      Serial.println(httpCode);
+      Serial.println(payload);
+      Serial.println("-------------------------------------------------------------------");
+    }
+    else 
+    {
+      Serial.println("Ошибка HTTP-запроса");
+    }
+    // освобождаем ресурсы микроконтроллера
+    http.end();
+  }
+  delay(10000);
 }
+// E1 - работает ----------------------------------------------------------------------------------------
 */
 
+/*
+// v2 - работает ----------------------------------------------------------------------------------------
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 
@@ -132,77 +150,12 @@ void loop()
 
   delay(10000);
 }
-
-
-/*
-
-// Подключаем библиотеку для работы с HTTP-протоколом
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-
-// Вводим имя и пароль точки доступа
-const char *ssid =     "linksystve";     // Put your SSID here
-const char *password = "x93k6kq6wf";     // Put your PASSWORD here
-
-//const char* ssid     = "OPPO A9 2020";
-//const char* password = "b277a4ee84e8";
-
-void setup() 
-{
-  Serial.begin(115200);
-  // делаем небольшую задержку на открытие монитора порта
-  delay(5000);
-  Serial.println("Через 5 секунд соединяемся с Wi-Fi..");
-  delay(5000);
-  // подключаемся к Wi-Fi сети
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    delay(1000);
-    Serial.println("Соединяемся с Wi-Fi..");
-  }
-  Serial.println("Соединение с Wi-Fi установлено");
-}
-
-void loop() 
-{
-  // выполняем проверку подключения к беспроводной сети
-  if ((WiFi.status() == WL_CONNECTED)) 
-  {
-    // создаем объект для работы с HTTP
-    HTTPClient http;
-    // подключаемся к веб-странице
-    // http.begin("http://developer.alexanderklimov.ru/arduino/");
-    // http.begin("https://doortry.ru/stihi/sorevnovanie-s-hakerami");
-    // http.begin("https://kwinflat.ru/svanidze/");
-    http.begin(WiFiClient,"https://kwinflat.ru/Vid17b/");
-    
-    // делаем GET запрос
-    int httpCode = http.GET();
-    // проверяем успешность запроса
-    if (httpCode > 0) 
-    {
-      // выводим ответ сервера
-      String payload = http.getString();
-      Serial.println("\n-------------------------------------------------------------------");
-      Serial.println(httpCode);
-      Serial.println(payload);
-      Serial.println("-------------------------------------------------------------------");
-    }
-    else 
-    {
-      Serial.println("Ошибка HTTP-запроса");
-    }
-    // освобождаем ресурсы микроконтроллера
-    http.end();
-  }
-  delay(10000);
-}
+// E2 - работает ----------------------------------------------------------------------------------------
 */
 
-
-
 /*
+// v3 - работает ----------------------------------------------------------------------------------------
+
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
@@ -211,7 +164,7 @@ const char *ssid = "TP-Link_B394";                        // Название т
 const char *password = "18009217";                        // Пароль точки доступа 
 
 // Целевой URL (замените на свой)
-const char* serverUrl = "https://kwinflat.ru/Vid17b"; // Для POST
+const char* serverUrl = "http://kwinflat.ru/Vid17b/"; // Для POST
 // Или для GET: const char* serverUrl = "http://example.com/get.php";
 
 void setup() 
@@ -282,9 +235,11 @@ void loop()
     delay(100);
   }
 }
+// E3 - работает ----------------------------------------------------------------------------------------
 */
 
-/*
+
+
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h> 
 boolean recievedFlag;
@@ -294,7 +249,7 @@ String strData, Link;
 const char *ssid = "TP-Link_B394";                        // Название точки доступа
 const char *password = "18009217";                        // Пароль точки доступа 
 //const char *host = "www.kwinflat.ru";                     // Адрес нашего веб сервера
-const char *host = "https://kwinflat.ru/Vid17b";         // Адрес нашего веб сервера
+const char *host = "http://kwinflat.ru/Vid17b";         // Адрес нашего веб сервера
 const int httpsPort = 443;                                // Адрес порта для HTTPS= 443 или HTTP = 80
 //const char fingerprint[] PROGMEM = "5B:FB:D1:D4:49:D3:0F:A9:C6:40:03:34:BA:E0:24:05:AA:D2:E2:01";    //ключ для шифрования
 const char fingerprint[] PROGMEM = "15:5D:DF:F0:1C:A8:FB:88:61:83:AF:20:7D:E7:95:E0:37:44:C0:D5";    //ключ для шифрования
@@ -386,4 +341,3 @@ void loop()
   }                                    // Опускаем флаг
   delay(100);
 }
-*/
