@@ -3,11 +3,11 @@
 #include <HTTPClient.h>
 
 // Вводим имя и пароль точки доступа
-//const char *ssid =     "linksystve";     // Put your SSID here
-//const char *password = "x93k6kq6wf";     // Put your PASSWORD here
+const char *ssid =     "linksystve";     // Put your SSID here
+const char *password = "X93K6KQ6WF";     // Put your PASSWORD here
 
-const char* ssid     = "OPPO A9 2020";
-const char* password = "b277a4ee84e8";
+//const char* ssid     = "OPPO A9 2020";
+//const char* password = "b277a4ee84e8";
 
 void setup() 
 {
@@ -41,6 +41,7 @@ void loop()
     
     // делаем GET запрос
     int httpCode = http.GET();
+    Serial.print("httpCode= "); Serial.println(httpCode);
     // проверяем успешность запроса
     if (httpCode > 0) 
     {
