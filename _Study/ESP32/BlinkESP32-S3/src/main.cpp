@@ -5,7 +5,7 @@
 // Клон N16R8 и DevKitC-1 v1.0 — вывод 48, DevKitC-1 v1.1 — вывод 38.
 // На клоне светодиод отзовётся, только если запаяна перемычка RGB.
 const int RGB_PIN = 48;
-
+// const int RGB_PIN = 38;
 
 void setup() 
 {
